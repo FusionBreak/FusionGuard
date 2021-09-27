@@ -16,9 +16,16 @@ namespace FusionGuard.Twitch.CommandHandler
 
         internal class Handler : IRequestHandler<Command>
         {
+            TwitchClient _client;
+
+            public Handler(TwitchClient client)
+            {
+                _client = client;
+            }
+
             public Task<Unit> Handle(Command request, CancellationToken cancellationToken)
             {
-                request.client.ClearChat(request.channelName);
+                _client.ClearChat(request.channelName);
                 return Unit.Task;
             }
         }

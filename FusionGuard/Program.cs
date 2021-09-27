@@ -4,6 +4,9 @@ using FusionGuard.Configuration;
 using FusionGuard.Twitch;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
+using TwitchLib.Client;
+using TwitchLib.Communication.Clients;
+using TwitchLib.Communication.Models;
 
 namespace FusionGuard
 {
@@ -18,6 +21,7 @@ namespace FusionGuard
             var services = new ServiceCollection();
             services.AddMediatR(typeof(Program));
             services.AddSingleton(ConfigReader.Read());
+            services.AddSingleton(new TwitchClient(new WebSocketClient(new ClientOptions { MessagesAllowedInPeriod = 750, ThrottlingPeriod = TimeSpan.FromSeconds(30) })));
             services.AddSingleton<TwitchBot>();
             _serviceScope= services.BuildServiceProvider().CreateScope();
         }

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using TwitchLib.Client;
 
 namespace FusionGuard.Twitch.CommandHandler
 {
@@ -14,6 +15,13 @@ namespace FusionGuard.Twitch.CommandHandler
 
         internal class Handler : IRequestHandler<Command>
         {
+            TwitchClient _client;
+
+            public Handler(TwitchClient client)
+            {
+                _client = client;
+            }
+
             public Task<Unit> Handle(Command request, CancellationToken cancellationToken)
             {
                 Console.WriteLine("Test");

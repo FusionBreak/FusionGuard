@@ -11,13 +11,20 @@ namespace FusionGuard.Twitch.CommandHandler
 {
     internal class Ping
     {
-        public record Command(TwitchClient client, string channelName) : IRequest;
+        public record Command(string channelName) : IRequest;
 
         internal class Handler : IRequestHandler<Command>
         {
+            TwitchClient _client;
+
+            public Handler(TwitchClient client)
+            {
+                _client = client;
+            }
+
             public Task<Unit> Handle(Command request, CancellationToken cancellationToken)
             {
-                request.client.SendMessage(request.channelName, "Pong!");
+                _client.SendMessage(request.channelName, "Pong!");
                 return Unit.Task;
             }
         }

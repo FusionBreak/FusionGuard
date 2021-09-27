@@ -21,11 +21,11 @@ namespace FusionGuard.Twitch
         IMediator _mediator;
         string _defaultChannelName;
 
-        public TwitchBot(Config config, IMediator mediator)
+        public TwitchBot(Config config, TwitchClient client, IMediator mediator)
         {
             _mediator = mediator;
             _defaultChannelName = config.TwitchUsername;
-            _client = new TwitchClient(new WebSocketClient(new ClientOptions { MessagesAllowedInPeriod = 750, ThrottlingPeriod = TimeSpan.FromSeconds(30) }));
+            _client = client;
             _client.Initialize(new ConnectionCredentials(config.TwitchUsername, config.OAuthKey), config.TwitchUsername);
             RegisterEvents();
         }
@@ -62,7 +62,7 @@ namespace FusionGuard.Twitch
                 switch (chatCommand.Command.ToLower())
                 {
                     case "ping":
-                        await _mediator.Send(new Ping.Command(_client, e.ChatMessage.Channel));
+                        await _mediator.Send(new Ping.Command(e.ChatMessage.Channel));
                         break;
                     case "panic":
                         await _mediator.Send(new Panic.Command(_client, e.ChatMessage.Channel));

@@ -1,5 +1,4 @@
-﻿using FusionGuard.Twitch.Commands;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,36 +9,31 @@ using TwitchLib.Client.Models;
 using TwitchLib.Client.Extensions;
 using TwitchLib.Communication.Clients;
 using TwitchLib.Communication.Models;
+using FusionGuard.Configuration;
+using MediatR;
+using FusionGuard.Twitch.CommandHandler;
 
 namespace FusionGuard.Twitch
 {
     public class TwitchBot : IDisposable
     {
         TwitchClient _client;
+        IMediator _mediator;
         string _defaultChannelName;
-        DefaultChannelCommandHandler _defaultChannelCommandHandler;
 
-        public bool IsRunning { get; private set; }
-
-        public TwitchBot(string twitchUsername, string oAuthKey, string defaultChannelName)
+        public TwitchBot(Config config, IMediator mediator)
         {
-            _defaultChannelCommandHandler = new DefaultChannelCommandHandler();
-            _defaultChannelName = defaultChannelName;
+            _mediator = mediator;
+            _defaultChannelName = config.TwitchUsername;
             _client = new TwitchClient(new WebSocketClient(new ClientOptions { MessagesAllowedInPeriod = 750, ThrottlingPeriod = TimeSpan.FromSeconds(30) }));
-            _client.Initialize(new ConnectionCredentials(twitchUsername, oAuthKey), defaultChannelName);
+            _client.Initialize(new ConnectionCredentials(config.TwitchUsername, config.OAuthKey), config.TwitchUsername);
             RegisterEvents();
         }
 
-        public void Start()
+        public async Task RunAsync()
         {
             _client.Connect();
-            IsRunning = true;
-        }
-
-        public void Stop()
-        {
-            _client.Disconnect();
-            IsRunning = false;
+            await Task.Delay(-1);
         }
 
         private void RegisterEvents()
@@ -59,10 +53,24 @@ namespace FusionGuard.Twitch
             Console.WriteLine($"{e.DateTime}: {e.BotUsername} - {e.Data}");
         }
 
-        private void HandleMessageReceived(object? sender, OnMessageReceivedArgs e)
-        {         
-            if(e.ChatMessage.Channel == _defaultChannelName)
-                _defaultChannelCommandHandler.Handle(e.ChatMessage.Message);
+        private async void HandleMessageReceived(object? sender, OnMessageReceivedArgs e)
+        {
+            if (e.ChatMessage.Channel == _defaultChannelName && e.ChatMessage.Message.StartsWith("!"))
+            {
+                var chatCommand = ChatCommand.Parse(e.ChatMessage.Message);
+
+                switch (chatCommand.Command.ToLower())
+                {
+                    case "ping":
+                        await _mediator.Send(new Ping.Command(_client, e.ChatMessage.Channel));
+                        break;
+                    case "panic":
+                        await _mediator.Send(new Panic.Command(_client, e.ChatMessage.Channel));
+                        break;
+                    default:
+                        break;
+                }
+            }
         }
     }
 }

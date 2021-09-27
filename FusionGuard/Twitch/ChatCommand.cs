@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FusionGuard.Twitch.Commands
+namespace FusionGuard.Twitch
 {
     public class ChatCommand
     {

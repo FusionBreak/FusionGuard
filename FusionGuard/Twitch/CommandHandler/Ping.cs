@@ -24,7 +24,10 @@ namespace FusionGuard.Twitch.CommandHandler
 
             public Task<Unit> Handle(Command request, CancellationToken cancellationToken)
             {
-                _client.SendMessage(request.channelName, "Pong!");
+                if(request.channelName != _client.TwitchUsername)
+                    return Unit.Task;
+
+                _client.SendMessage(_client.TwitchUsername, "Pong!");
                 return Unit.Task;
             }
         }

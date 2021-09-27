@@ -7,12 +7,13 @@ using System.Threading;
 using System.Threading.Tasks;
 using TwitchLib.Client;
 using TwitchLib.Client.Extensions;
+using TwitchLib.Client.Models;
 
 namespace FusionGuard.Twitch.CommandHandler
 {
     internal class Panic
     {
-        public record Command(TwitchClient client, string channelName) : IRequest;
+        public record Command(ChatMessage ChatMessage) : IRequest;
 
         internal class Handler : IRequestHandler<Command>
         {
@@ -25,9 +26,16 @@ namespace FusionGuard.Twitch.CommandHandler
 
             public Task<Unit> Handle(Command request, CancellationToken cancellationToken)
             {
-                _client.ClearChat(request.channelName);
+                if(UserIsAuthorized(request))
+                {
+                    _client.ClearChat(request.ChatMessage.Channel);
+                }
+                
                 return Unit.Task;
             }
+
+            private bool UserIsAuthorized(Command request) 
+                => request.ChatMessage.IsBroadcaster || request.ChatMessage.IsModerator;
         }
     }
 }

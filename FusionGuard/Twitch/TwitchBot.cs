@@ -27,6 +27,7 @@ namespace FusionGuard.Twitch
             _defaultChannelName = config.TwitchUsername;
             _client = client;
             _client.Initialize(new ConnectionCredentials(config.TwitchUsername, config.OAuthKey), config.TwitchUsername);
+            _client.AddChatCommandIdentifier('!');
             RegisterEvents();
         }
 
@@ -38,39 +39,56 @@ namespace FusionGuard.Twitch
 
         private void RegisterEvents()
         {
-            _client.OnLog += Log;
-            _client.OnMessageReceived += HandleMessageReceived;
+            _client.OnChatCommandReceived += _client_OnChatCommandReceived;
+            _client.OnNoPermissionError += _client_OnNoPermissionError;
+            _client.OnLog += _client_OnLog;
+        }
+
+        private void _client_OnLog(object? sender, OnLogArgs e)
+        {
+            if(e.Data.Contains("@msg-id=no_permission"))
+            {
+                _client.SendMessage(GetUsernameFromLog(e.Data), "Ich muss zuerst Moderator-Rechte erhalten um dies auszuführen.");
+            }
+
+            Console.WriteLine($"{e.DateTime} :\t{e.Data}");
         }
 
         public void Dispose()
         {
-            _client.OnLog -= Log;
-            _client.OnMessageReceived -= HandleMessageReceived;
+            _client.OnChatCommandReceived -= _client_OnChatCommandReceived;
+            _client.OnNoPermissionError -= _client_OnNoPermissionError;
         }
 
-        private void Log(object? sender, OnLogArgs e)
+        private void _client_OnNoPermissionError(object? sender, EventArgs e)
         {
-            Console.WriteLine($"{e.DateTime}: {e.BotUsername} - {e.Data}");
-        }
+            //throw new NotImplementedException();
+        } 
 
-        private async void HandleMessageReceived(object? sender, OnMessageReceivedArgs e)
+        private async void _client_OnChatCommandReceived(object? sender, OnChatCommandReceivedArgs e)
         {
-            if (e.ChatMessage.Channel == _defaultChannelName && e.ChatMessage.Message.StartsWith("!"))
+            switch(e.Command.CommandText)
             {
-                var chatCommand = ChatCommand.Parse(e.ChatMessage.Message);
-
-                switch (chatCommand.Command.ToLower())
-                {
-                    case "ping":
-                        await _mediator.Send(new Ping.Command(e.ChatMessage.Channel));
-                        break;
-                    case "panic":
-                        await _mediator.Send(new Panic.Command(_client, e.ChatMessage.Channel));
-                        break;
-                    default:
-                        break;
-                }
+                case "ping":
+                    await _mediator.Send(new Ping.Command(e.Command.ChatMessage.Channel));
+                    break;
+                case "join":
+                    await _mediator.Send(new Join.Command(e.Command.ChatMessage.Username));
+                    break;
+                case "leave":
+                    await _mediator.Send(new Leave.Command(e.Command.ChatMessage.Username));
+                    break;
+                case "panic":
+                    await _mediator.Send(new Panic.Command(e.Command.ChatMessage));
+                    break;
+                default:
+                    break;
             }
         }
+
+        /*
+         * Received: @msg-id=no_permission :tmi.twitch.tv NOTICE #fusionbreak :You don't have permission to perform that action.
+         */
+        private string GetUsernameFromLog(string data) => string.Concat(data.SkipWhile(c => c != '#').Skip(1).TakeWhile(c => c != ' '));
     }
 }

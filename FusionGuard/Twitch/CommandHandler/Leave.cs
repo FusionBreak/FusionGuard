@@ -9,7 +9,7 @@ using TwitchLib.Client;
 
 namespace FusionGuard.Twitch.CommandHandler
 {
-    internal static class Join
+    internal static class Leave
     {
         public record Command(string userName) : IRequest;
 
@@ -24,16 +24,15 @@ namespace FusionGuard.Twitch.CommandHandler
 
             public Task<Unit> Handle(Command request, CancellationToken cancellationToken)
             {
-                if (request.userName == _client.TwitchUsername)
+                if(request.userName == _client.TwitchUsername)
                     return Unit.Task;
 
-                if (!_client.JoinedChannels.Any(channel => channel.Channel == request.userName))
+                if(_client.JoinedChannels.Any(channel => channel.Channel == request.userName))
                 {
-                    _client.JoinChannel(request.userName);
-                    _client.SendMessage(_client.TwitchUsername, $"Der Kanal {request.userName} wurde eingetragen.");
-                    _client.SendMessage(request.userName, "Test");
+                    _client.LeaveChannel(request.userName);
+                    _client.SendMessage(_client.TwitchUsername, $"Der Kanal {request.userName} wurde ausgetragen.");
                 }
-       
+
                 return Unit.Task;
             }
         }

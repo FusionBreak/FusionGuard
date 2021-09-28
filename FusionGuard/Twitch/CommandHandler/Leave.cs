@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using FusionGuard.Resources;
+using MediatR;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,7 +31,7 @@ namespace FusionGuard.Twitch.CommandHandler
                 if(_client.JoinedChannels.Any(channel => channel.Channel == request.userName))
                 {
                     _client.LeaveChannel(request.userName);
-                    _client.SendMessage(_client.TwitchUsername, $"Der Kanal {request.userName} wurde ausgetragen.");
+                    _client.SendMessage(_client.TwitchUsername, Language.ChannelLeaved.Replace("{UserName}", request.userName));
                 }
 
                 return Unit.Task;

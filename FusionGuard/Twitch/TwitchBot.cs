@@ -12,6 +12,7 @@ using TwitchLib.Communication.Models;
 using FusionGuard.Configuration;
 using MediatR;
 using FusionGuard.Twitch.CommandHandler;
+using FusionGuard.Resources;
 
 namespace FusionGuard.Twitch
 {
@@ -48,7 +49,7 @@ namespace FusionGuard.Twitch
         {
             if(e.Data.Contains("@msg-id=no_permission"))
             {
-                _client.SendMessage(GetUsernameFromLog(e.Data), "Ich muss zuerst Moderator-Rechte erhalten um dies auszuführen.");
+                _client.SendMessage(GetUsernameFromLog(e.Data), Language.NeedPermissions);
             }
 
             Console.WriteLine($"{e.DateTime} :\t{e.Data}");
@@ -80,6 +81,9 @@ namespace FusionGuard.Twitch
                     break;
                 case "panic":
                     await _mediator.Send(new Panic.Command(e.Command.ChatMessage));
+                    break;
+                case "peace":
+                    await _mediator.Send(new Peace.Command(e.Command.ChatMessage));
                     break;
                 default:
                     break;

@@ -63,7 +63,7 @@ namespace FusionGuard.Twitch
 
         private void _client_OnNoPermissionError(object? sender, EventArgs e)
         {
-            //throw new NotImplementedException();
+
         } 
 
         private async void _client_OnChatCommandReceived(object? sender, OnChatCommandReceivedArgs e)
@@ -90,9 +90,6 @@ namespace FusionGuard.Twitch
             }
         }
 
-        /*
-         * Received: @msg-id=no_permission :tmi.twitch.tv NOTICE #fusionbreak :You don't have permission to perform that action.
-         */
         private string GetUsernameFromLog(string data) => string.Concat(data.SkipWhile(c => c != '#').Skip(1).TakeWhile(c => c != ' '));
     }
 }

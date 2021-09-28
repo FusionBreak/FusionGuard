@@ -12,7 +12,7 @@ using TwitchLib.Client.Models;
 
 namespace FusionGuard.Twitch.CommandHandler
 {
-    internal class Panic
+    internal class Peace
     {
         public record Command(ChatMessage ChatMessage) : IRequest;
 
@@ -29,12 +29,11 @@ namespace FusionGuard.Twitch.CommandHandler
             {
                 if(UserIsAuthorized(request))
                 {
-                    _client.Marker(request.ChatMessage.Channel);
-                    _client.ClearChat(request.ChatMessage.Channel);
-                    _client.SubscribersOnlyOn(request.ChatMessage.Channel);
-                    _client.SlowModeOn(request.ChatMessage.Channel, TimeSpan.FromMinutes(1));
+                    _client.EmoteOnlyOff(request.ChatMessage.Channel);
+                    _client.SubscribersOnlyOff(request.ChatMessage.Channel);
+                    _client.SlowModeOff(request.ChatMessage.Channel);
 
-                    _client.SendMessage(request.ChatMessage.Channel, Language.PanicEnabled);
+                    _client.SendMessage(request.ChatMessage.Channel, Language.PeaceEnabled);
                 }
                 
                 return Unit.Task;

@@ -19,20 +19,31 @@ namespace FusionGuard.Twitch.CommandHandler
         internal class Handler : IRequestHandler<Command>
         {
             TwitchClient _client;
+            Dictionary<string, PanicMode> _panics;
 
-            public Handler(TwitchClient client)
+            public Handler(TwitchClient client, Dictionary<string, PanicMode> panics)
             {
                 _client = client;
+                _panics = panics;
             }
 
             public Task<Unit> Handle(Command request, CancellationToken cancellationToken)
             {
-                if(UserIsAuthorized(request))
+                PanicMode panic;
+                if(UserIsAuthorized(request) && _panics.TryGetValue(request.ChatMessage.Channel, out panic))
                 {
-                    _client.EmoteOnlyOff(request.ChatMessage.Channel);
-                    _client.SubscribersOnlyOff(request.ChatMessage.Channel);
-                    _client.SlowModeOff(request.ChatMessage.Channel);
+                    if(panic.EmoteOnly is null || (bool)panic.EmoteOnly)
+                        _client.EmoteOnlyOff(request.ChatMessage.Channel);
 
+                    if(panic.SubOnly is null || (bool)panic.SubOnly)
+                        _client.SubscribersOnlyOff(request.ChatMessage.Channel);
+
+                    if(panic.SlowMode is not null && (int)panic.SlowMode > 0)
+                        _client.SlowModeOn(request.ChatMessage.Channel, TimeSpan.FromSeconds((int)panic.SlowMode));
+                    else
+                        _client.SlowModeOff(request.ChatMessage.Channel);
+
+                    _panics.Remove(request.ChatMessage.Channel);
                     _client.SendMessage(request.ChatMessage.Channel, Language.PeaceEnabled);
                 }
                 

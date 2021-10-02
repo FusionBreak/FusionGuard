@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using FusionGuard.Configuration;
 using FusionGuard.Twitch;
@@ -23,6 +24,7 @@ namespace FusionGuard
             services.AddSingleton(ConfigReader.Read());
             services.AddSingleton(new TwitchClient(new WebSocketClient(new ClientOptions { MessagesAllowedInPeriod = 750, ThrottlingPeriod = TimeSpan.FromSeconds(30) })));
             services.AddSingleton<TwitchBot>();
+            services.AddSingleton(new Dictionary<string, PanicMode>());
             _serviceScope= services.BuildServiceProvider().CreateScope();
         }
 

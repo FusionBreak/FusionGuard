@@ -6,5 +6,5 @@ using System.Threading.Tasks;
 
 namespace FusionGuard.Configuration
 {
-    public record Config(string TwitchUsername, string OAuthKey);
+    public record Config(string TwitchUsername, string OAuthKey, string DatabaseConnectionString);
 }

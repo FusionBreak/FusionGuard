@@ -13,18 +13,21 @@ using FusionGuard.Configuration;
 using MediatR;
 using FusionGuard.Twitch.CommandHandler;
 using FusionGuard.Resources;
+using FusionGuard.Database;
 
 namespace FusionGuard.Twitch
 {
-    public class TwitchBot : IDisposable
+    internal class TwitchBot : IDisposable
     {
         TwitchClient _client;
         IMediator _mediator;
         string _defaultChannelName;
+        BotContext _database;
 
-        public TwitchBot(Config config, TwitchClient client, IMediator mediator)
+        public TwitchBot(Config config, TwitchClient client, IMediator mediator, BotContext database)
         {
             _mediator = mediator;
+            _database = database;
             _defaultChannelName = config.TwitchUsername;
             _client = client;
             _client.Initialize(new ConnectionCredentials(config.TwitchUsername, config.OAuthKey), config.TwitchUsername);
@@ -35,7 +38,17 @@ namespace FusionGuard.Twitch
         public async Task RunAsync()
         {
             _client.Connect();
+            await JoinChannelsFromDb();
             await Task.Delay(-1);
+        }
+
+        private async Task JoinChannelsFromDb()
+        {
+            foreach (var user in _database.Users)
+                if (user is not null)
+                    _client.JoinChannel(user.Channel);
+
+            await Task.CompletedTask;
         }
 
         private void RegisterEvents()

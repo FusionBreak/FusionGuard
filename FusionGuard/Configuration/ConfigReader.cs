@@ -15,7 +15,7 @@ namespace FusionGuard.Configuration
                  .AddJsonFile("appsettings.json")
                  .Build();
 
-            return new Config(config.GetSection("TwitchUsername").Value, config.GetSection("OAuthKey").Value);
+            return new Config(config.GetSection("TwitchUsername").Value, config.GetSection("OAuthKey").Value, config.GetSection("DatabaseConnectionString").Value);
         }
     }
 }

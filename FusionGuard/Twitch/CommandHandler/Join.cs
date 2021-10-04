@@ -1,4 +1,5 @@
-﻿using FusionGuard.Resources;
+﻿using FusionGuard.Database;
+using FusionGuard.Resources;
 using MediatR;
 using System;
 using System.Collections.Generic;
@@ -17,10 +18,12 @@ namespace FusionGuard.Twitch.CommandHandler
         internal class Handler : IRequestHandler<Command>
         {
             TwitchClient _client;
+            BotContext _database;
 
-            public Handler(TwitchClient client)
+            public Handler(TwitchClient client, BotContext database)
             {
                 _client = client;
+                _database = database;
             }
 
             public Task<Unit> Handle(Command request, CancellationToken cancellationToken)
@@ -31,6 +34,8 @@ namespace FusionGuard.Twitch.CommandHandler
                 if (!_client.JoinedChannels.Any(channel => channel.Channel == request.userName))
                 {
                     _client.JoinChannel(request.userName);
+                    _database.Users.Add(new User() { Channel= request.userName });
+                    _database.SaveChanges();
                     _client.SendMessage(_client.TwitchUsername, Language.ChannelJoined.Replace("{UserName}", request.userName));
                 }
        

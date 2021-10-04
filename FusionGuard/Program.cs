@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using FusionGuard.Configuration;
+using FusionGuard.Database;
 using FusionGuard.Twitch;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
@@ -18,10 +19,11 @@ namespace FusionGuard
         static void Main() => new Program().RunAsync().Wait();
 
         private Program()
-        {
+        {            
             var services = new ServiceCollection();
             services.AddMediatR(typeof(Program));
             services.AddSingleton(ConfigReader.Read());
+            services.AddDbContext<BotContext>();
             services.AddSingleton(new TwitchClient(new WebSocketClient(new ClientOptions { MessagesAllowedInPeriod = 750, ThrottlingPeriod = TimeSpan.FromSeconds(30) })));
             services.AddSingleton<TwitchBot>();
             services.AddSingleton(new Dictionary<string, PanicMode>());

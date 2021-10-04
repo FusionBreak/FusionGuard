@@ -44,7 +44,7 @@ namespace FusionGuard.Twitch
 
         private async Task JoinChannelsFromDb()
         {
-            foreach (var user in _database.Users)
+            foreach (var user in _database.Users.Where(user => user.Active))
                 if (user is not null)
                     _client.JoinChannel(user.Channel);
 
@@ -93,7 +93,7 @@ namespace FusionGuard.Twitch
                     await _mediator.Send(new Leave.Command(e.Command.ChatMessage.Username));
                     break;
                 case "panic":
-                    await _mediator.Send(new Panic.Command(e.Command.ChatMessage));
+                    await _mediator.Send(new CommandHandler.Panic.Command(e.Command.ChatMessage));
                     break;
                 case "peace":
                     await _mediator.Send(new Peace.Command(e.Command.ChatMessage));

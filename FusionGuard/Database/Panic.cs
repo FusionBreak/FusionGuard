@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace FusionGuard.Database
 {
-    public class User
+    public class Panic
     {
         public int Id { get; set; }
-        public string Channel { get; set; } = string.Empty;
-        public bool Active { get; set; }
-        public ICollection<Panic>? Panics { get; set; }
+        public User? User { get; set; }
+        public DateTime Beginn { get; set; }
+        public DateTime End { get; set; }
     }
 }

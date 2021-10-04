@@ -33,9 +33,14 @@ namespace FusionGuard.Twitch.CommandHandler
 
                 if (!_client.JoinedChannels.Any(channel => channel.Channel == request.userName))
                 {
-                    _client.JoinChannel(request.userName);
-                    _database.Users.Add(new User() { Channel= request.userName });
+                    if(_database.Users.Any(user => user.Channel == request.userName))
+                        _database.Users.First(user => user.Channel == request.userName).Active = true;
+                    else
+                        _database.Users.Add(new User() { Channel = request.userName, Active = true });
+
                     _database.SaveChanges();
+
+                    _client.JoinChannel(request.userName);
                     _client.SendMessage(_client.TwitchUsername, Language.ChannelJoined.Replace("{UserName}", request.userName));
                 }
        

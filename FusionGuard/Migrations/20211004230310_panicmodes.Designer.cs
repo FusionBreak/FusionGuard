@@ -3,15 +3,17 @@ using System;
 using FusionGuard.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace FusionGuard.Migrations
 {
     [DbContext(typeof(BotContext))]
-    partial class BotContextModelSnapshot : ModelSnapshot
+    [Migration("20211004230310_panicmodes")]
+    partial class panicmodes
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

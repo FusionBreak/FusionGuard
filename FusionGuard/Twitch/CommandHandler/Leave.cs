@@ -34,7 +34,7 @@ namespace FusionGuard.Twitch.CommandHandler
                 if(_client.JoinedChannels.Any(channel => channel.Channel == request.userName))
                 {
                     _client.LeaveChannel(request.userName);
-                    _database.Users.Remove(_database.Users.Where(user => user.Channel == request.userName).First());
+                    _database.Users.First(user => user.Channel == request.userName).Active = false;
                     _database.SaveChanges();
                     _client.SendMessage(_client.TwitchUsername, Language.ChannelLeaved.Replace("{UserName}", request.userName));
                 }

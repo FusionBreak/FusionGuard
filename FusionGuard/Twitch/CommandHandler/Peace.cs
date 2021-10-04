@@ -1,5 +1,7 @@
-﻿using FusionGuard.Resources;
+﻿using FusionGuard.Database;
+using FusionGuard.Resources;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,11 +22,13 @@ namespace FusionGuard.Twitch.CommandHandler
         {
             TwitchClient _client;
             Dictionary<string, PanicMode> _panics;
+            BotContext _database;
 
-            public Handler(TwitchClient client, Dictionary<string, PanicMode> panics)
+            public Handler(TwitchClient client, Dictionary<string, PanicMode> panics, BotContext database)
             {
                 _client = client;
                 _panics = panics;
+                _database = database;
             }
 
             public Task<Unit> Handle(Command request, CancellationToken cancellationToken)
@@ -32,7 +36,17 @@ namespace FusionGuard.Twitch.CommandHandler
                 PanicMode panic;
                 if(UserIsAuthorized(request) && _panics.TryGetValue(request.ChatMessage.Channel, out panic))
                 {
-                    if(panic.EmoteOnly is null || (bool)panic.EmoteOnly)
+                    var user = _database.Users.Include(user => user.Panics).First(user => user.Channel == request.ChatMessage.Channel);
+                    user.Panics!.Add(new Database.Panic() 
+                    { 
+                        Beginn = panic.Beginn,
+                        End = DateTime.Now
+                    });
+
+                    _database.SaveChanges();
+
+
+                    if (panic.EmoteOnly is null || (bool)panic.EmoteOnly)
                         _client.EmoteOnlyOff(request.ChatMessage.Channel);
 
                     if(panic.SubOnly is null || (bool)panic.SubOnly)

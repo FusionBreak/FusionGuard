@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace FusionGuard.Database
 {
-    internal class BotContext : DbContext
+    public class BotContext : DbContext
     {
         private readonly string _connectionString;
 

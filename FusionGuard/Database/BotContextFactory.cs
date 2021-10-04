@@ -9,12 +9,6 @@ namespace FusionGuard.Database
 {
     public class BotContextFactory : IDesignTimeDbContextFactory<BotContext>
     {
-        public BotContext CreateDbContext(string[] args)
-        {
-            foreach (var arg in args)
-                Console.WriteLine(arg);
-
-            return new BotContext(args[0]);
-        }
+        public BotContext CreateDbContext(string[] args) => new BotContext(args[0]);
     }
 }

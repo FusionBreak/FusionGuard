@@ -127,9 +127,9 @@
     <value>Ich benötige zuerst Moderator-Rechte um dies auszuführen zu können.</value>
   </data>
   <data name="PanicEnabled" xml:space="preserve">
-    <value>Dieser Kanal wurde in den Panic-Mode versetzt. Mehr Infos folgen irgendwann...</value>
+    <value>ACHTUNG! Hate-Raid! Schreibt bitte keine Nachrichten rein bis wir den Chat wieder freigeben!</value>
   </data>
   <data name="PeaceEnabled" xml:space="preserve">
-    <value>Der Panic-Mode wurde wieder deaktiviert.</value>
+    <value>Der Chat ist nun wieder frei! Danke für eure Geduld!</value>
   </data>
 </root>

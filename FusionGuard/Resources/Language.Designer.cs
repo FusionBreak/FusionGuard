@@ -88,7 +88,7 @@ namespace FusionGuard.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Dieser Kanal wurde in den Panic-Mode versetzt. Mehr Infos folgen irgendwann....
+        ///   Looks up a localized string similar to ACHTUNG! Hate-Raid! Schreibt bitte keine Nachrichten rein bis wir den Chat wieder freigeben!.
         /// </summary>
         internal static string PanicEnabled {
             get {
@@ -97,7 +97,7 @@ namespace FusionGuard.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Der Panic-Mode wurde wieder deaktiviert..
+        ///   Looks up a localized string similar to Der Chat ist nun wieder frei! Danke für eure Geduld!.
         /// </summary>
         internal static string PeaceEnabled {
             get {

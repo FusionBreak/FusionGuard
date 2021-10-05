@@ -16,13 +16,13 @@ namespace FusionGuard
     {
         private IServiceScope _serviceScope;
 
-        static void Main() => new Program().RunAsync().Wait();
+        static void Main(string[] args) => new Program(args).RunAsync().Wait();
 
-        private Program()
+        private Program(string[] args)
         {            
             var services = new ServiceCollection();
             services.AddMediatR(typeof(Program));
-            services.AddSingleton(ConfigReader.Read());
+            services.AddSingleton(args.Length > 0 ? ConfigReader.ReadCliArgs(args) : ConfigReader.ReadAppSettings());
             services.AddDbContext<BotContext>();
             services.AddSingleton(new TwitchClient(new WebSocketClient(new ClientOptions { MessagesAllowedInPeriod = 750, ThrottlingPeriod = TimeSpan.FromSeconds(30) })));
             services.AddSingleton<TwitchBot>();

@@ -31,7 +31,7 @@ namespace FusionGuard.Twitch.CommandHandler
                 _database = database;
             }
 
-            public Task<Unit> Handle(Command request, CancellationToken cancellationToken)
+            public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
             {
                 PanicMode panic;
                 if(UserIsAuthorized(request) && _panics.TryGetValue(request.ChatMessage.Channel, out panic))
@@ -43,7 +43,7 @@ namespace FusionGuard.Twitch.CommandHandler
                         End = DateTime.Now
                     });
 
-                    _database.SaveChanges();
+                    await _database.SaveChangesAsync();
 
 
                     if (panic.EmoteOnly is null || (bool)panic.EmoteOnly)
@@ -60,8 +60,8 @@ namespace FusionGuard.Twitch.CommandHandler
                     _panics.Remove(request.ChatMessage.Channel);
                     _client.SendMessage(request.ChatMessage.Channel, Language.PeaceEnabled);
                 }
-                
-                return Unit.Task;
+
+                return await Task.FromResult(Unit.Value);
             }
 
             private bool UserIsAuthorized(Command request) 

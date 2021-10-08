@@ -26,20 +26,20 @@ namespace FusionGuard.Twitch.CommandHandler
                 _database = database;
             }
 
-            public Task<Unit> Handle(Command request, CancellationToken cancellationToken)
+            public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
             {
                 if(request.userName == _client.TwitchUsername)
-                    return Unit.Task;
+                    return await Task.FromResult(Unit.Value);
 
-                if(_client.JoinedChannels.Any(channel => channel.Channel == request.userName))
+                if (_client.JoinedChannels.Any(channel => channel.Channel == request.userName))
                 {
                     _client.LeaveChannel(request.userName);
                     _database.Users.First(user => user.Channel == request.userName).Active = false;
-                    _database.SaveChanges();
+                    await _database.SaveChangesAsync();
                     _client.SendMessage(_client.TwitchUsername, Language.ChannelLeaved.Replace("{UserName}", request.userName));
                 }
 
-                return Unit.Task;
+                return await Task.FromResult(Unit.Value);
             }
         }
     }

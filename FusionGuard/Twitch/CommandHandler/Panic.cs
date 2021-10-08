@@ -27,7 +27,7 @@ namespace FusionGuard.Twitch.CommandHandler
                 _panics = panics;
             }
 
-            public Task<Unit> Handle(Command request, CancellationToken cancellationToken)
+            public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
             {
                 if(UserIsAuthorized(request) && !_panics.ContainsKey(request.ChatMessage.Channel))
                 {
@@ -56,8 +56,8 @@ namespace FusionGuard.Twitch.CommandHandler
 
                     _client.SendMessage(request.ChatMessage.Channel, Language.PanicEnabled);
                 }
-                
-                return Unit.Task;
+
+                return await Task.FromResult(Unit.Value);
             }
 
             private bool UserIsAuthorized(Command request) 

@@ -26,10 +26,10 @@ namespace FusionGuard.Twitch.CommandHandler
                 _database = database;
             }
 
-            public Task<Unit> Handle(Command request, CancellationToken cancellationToken)
+            public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
             {
                 if(request.userName == _client.TwitchUsername)
-                    return Unit.Task;
+                    return await Task.FromResult(Unit.Value);
 
                 if (!_client.JoinedChannels.Any(channel => channel.Channel == request.userName))
                 {
@@ -38,13 +38,13 @@ namespace FusionGuard.Twitch.CommandHandler
                     else
                         _database.Users.Add(new User() { Channel = request.userName, Active = true });
 
-                    _database.SaveChanges();
+                    await _database.SaveChangesAsync();
 
                     _client.JoinChannel(request.userName);
                     _client.SendMessage(_client.TwitchUsername, Language.ChannelJoined.Replace("{UserName}", request.userName));
                 }
-       
-                return Unit.Task;
+
+                return await Task.FromResult(Unit.Value);
             }
         }
     }

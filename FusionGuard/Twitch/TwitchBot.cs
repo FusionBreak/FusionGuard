@@ -56,6 +56,13 @@ namespace FusionGuard.Twitch
             _client.OnChatCommandReceived += _client_OnChatCommandReceived;
             _client.OnNoPermissionError += _client_OnNoPermissionError;
             _client.OnLog += _client_OnLog;
+            _client.OnDisconnected += _client_OnDisconnected;
+        }
+
+        private async void _client_OnDisconnected(object? sender, TwitchLib.Communication.Events.OnDisconnectedEventArgs e)
+        {
+            await Task.Delay(TimeSpan.FromSeconds(10));
+            try { _client.Reconnect(); } catch (Exception ex) {}
         }
 
         private void _client_OnLog(object? sender, OnLogArgs e)
@@ -72,6 +79,8 @@ namespace FusionGuard.Twitch
         {
             _client.OnChatCommandReceived -= _client_OnChatCommandReceived;
             _client.OnNoPermissionError -= _client_OnNoPermissionError;
+            _client.OnLog -= _client_OnLog;
+            _client.OnDisconnected -= _client_OnDisconnected;
         }
 
         private void _client_OnNoPermissionError(object? sender, EventArgs e)

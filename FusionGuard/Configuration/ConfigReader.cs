@@ -22,5 +22,12 @@ namespace FusionGuard.Configuration
         {
             return new Config(args[0], args[1], args[2]);
         }
+
+        public static Config ReadEnvVars()
+        {
+            return new Config(Environment.GetEnvironmentVariable("TwitchUsername") ?? throw new Exception(),
+                              Environment.GetEnvironmentVariable("OAuthKey") ?? throw new Exception(),
+                              Environment.GetEnvironmentVariable("DatabaseConnectionString") ?? throw new Exception());
+        }
     }
 }

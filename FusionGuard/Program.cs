@@ -22,7 +22,7 @@ namespace FusionGuard
         {            
             var services = new ServiceCollection();
             services.AddMediatR(typeof(Program));
-            services.AddSingleton(args.Length > 0 ? ConfigReader.ReadCliArgs(args) : ConfigReader.ReadAppSettings());
+            services.AddSingleton(args.Length > 0 ? ConfigReader.ReadCliArgs(args) : ConfigReader.ReadEnvVars());
             services.AddDbContext<BotContext>();
             services.AddSingleton(new TwitchClient(new WebSocketClient(new ClientOptions { MessagesAllowedInPeriod = 750, ThrottlingPeriod = TimeSpan.FromSeconds(30) })));
             services.AddSingleton<TwitchBot>();

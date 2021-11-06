@@ -10,7 +10,9 @@ namespace FusionGuard.Database
     {
         public int Id { get; set; }
         public string Channel { get; set; } = string.Empty;
+        public string TwitchUserId { get; set; } = string.Empty;
         public bool Active { get; set; }
         public ICollection<Panic>? Panics { get; set; }
+        public ICollection<AccessToken>? AccessToken { get; set; } 
     }
 }

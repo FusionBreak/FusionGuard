@@ -14,6 +14,8 @@ using MediatR;
 using FusionGuard.Twitch.CommandHandler;
 using FusionGuard.Resources;
 using FusionGuard.Database;
+using FusionGuard.Twitch.Handler;
+using TwitchLib.Api.Core.Enums;
 
 namespace FusionGuard.Twitch
 {
@@ -96,7 +98,15 @@ namespace FusionGuard.Twitch
                     await _mediator.Send(new Ping.Command(e.Command.ChatMessage.Channel));
                     break;
                 case "join":
-                    await _mediator.Send(new Join.Command(e.Command.ChatMessage.Username));
+                    var url = await _mediator.Send(new GetAuthorizationCodeUrl.Command(new AuthScopes[]
+                    { 
+                        AuthScopes.Helix_User_Edit_Follows,
+                        AuthScopes.User_Follows_Edit,
+                        AuthScopes.Helix_User_Read_BlockedUsers,
+                        AuthScopes.User_Read,
+                        AuthScopes.Helix_User_Read_Subscriptions
+                    }));
+                    await _mediator.Send(new SendAuthorizationCodeUrl.Command(url));                   
                     break;
                 case "leave":
                     await _mediator.Send(new Leave.Command(e.Command.ChatMessage.Username));

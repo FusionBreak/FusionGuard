@@ -12,5 +12,6 @@ namespace FusionGuard.Database
         public User? User { get; set; }
         public DateTime Beginn { get; set; }
         public DateTime End { get; set; }
+        public ICollection<PanicFollow>? PanicFollows { get; set; }
     }
 }

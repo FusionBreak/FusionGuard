@@ -1,5 +1,6 @@
 ﻿using FusionGuard.Database;
 using FusionGuard.Resources;
+using FusionGuard.Twitch.Handler;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -23,12 +24,14 @@ namespace FusionGuard.Twitch.CommandHandler
             TwitchClient _client;
             Dictionary<string, PanicMode> _panics;
             BotContext _database;
+            IMediator _mediator;
 
-            public Handler(TwitchClient client, Dictionary<string, PanicMode> panics, BotContext database)
+            public Handler(TwitchClient client, Dictionary<string, PanicMode> panics, BotContext database, IMediator mediator)
             {
                 _client = client;
                 _panics = panics;
                 _database = database;
+                _mediator = mediator;
             }
 
             public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
@@ -37,14 +40,18 @@ namespace FusionGuard.Twitch.CommandHandler
                 if(UserIsAuthorized(request) && _panics.TryGetValue(request.ChatMessage.Channel, out panic))
                 {
                     var user = _database.Users.Include(user => user.Panics).First(user => user.Channel == request.ChatMessage.Channel);
-                    user.Panics!.Add(new Database.Panic() 
-                    { 
+
+                    var follower = await _mediator.Send(new GetFollower.Command(user.TwitchUserId));
+                    var followerAfterPanicBegin = follower.Where(follow => follow.FollowedAt > panic.Beginn);
+
+                    panic.Stop();
+                    user.Panics!.Add(new Database.Panic()
+                    {
                         Beginn = panic.Beginn,
-                        End = DateTime.Now
+                        End = panic.End,
+                        PanicFollows = ToPanicFollow(followerAfterPanicBegin).ToArray(),
                     });
-
                     await _database.SaveChangesAsync();
-
 
                     if (panic.EmoteOnly is null || (bool)panic.EmoteOnly)
                         _client.EmoteOnlyOff(request.ChatMessage.Channel);
@@ -63,6 +70,14 @@ namespace FusionGuard.Twitch.CommandHandler
 
                 return await Task.FromResult(Unit.Value);
             }
+
+            private IEnumerable<PanicFollow> ToPanicFollow(IEnumerable<(DateTime FollowedAt, string UserId, string Username)> follows)
+            => follows.Select(follow => new PanicFollow()
+            {
+                FollowedAt = follow.FollowedAt,
+                TwitchUserId = follow.UserId,
+                Username = follow.Username
+            });
 
             private bool UserIsAuthorized(Command request) 
                 => request.ChatMessage.IsBroadcaster || request.ChatMessage.IsModerator;

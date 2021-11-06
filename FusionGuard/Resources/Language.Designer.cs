@@ -61,6 +61,16 @@ namespace FusionGuard.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Damit ich die meine Funktionen auf deinem Kanal ausüben kann, benötige ich deine Genehmigung. Diese erteilst du über folgenden Link:
+        ///{URL}.
+        /// </summary>
+        internal static string AuthorizationCodeUrlSend {
+            get {
+                return ResourceManager.GetString("AuthorizationCodeUrlSend", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Der Kanal {UserName} wurde eingetragen..
         /// </summary>
         internal static string ChannelJoined {

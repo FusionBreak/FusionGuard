@@ -117,6 +117,10 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="AuthorizationCodeUrlSend" xml:space="preserve">
+    <value>Damit ich die meine Funktionen auf deinem Kanal ausüben kann, benötige ich deine Genehmigung. Diese erteilst du über folgenden Link:
+{URL}</value>
+  </data>
   <data name="ChannelJoined" xml:space="preserve">
     <value>Der Kanal {UserName} wurde eingetragen.</value>
   </data>

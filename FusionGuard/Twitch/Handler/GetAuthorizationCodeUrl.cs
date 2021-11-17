@@ -28,7 +28,7 @@ namespace FusionGuard.Twitch.Handler
             public async Task<string> Handle(Command request, CancellationToken cancellationToken)
             {
                 var url = _api.Auth.GetAuthorizationCodeUrl(
-                    redirectUri: _config.HostURL,
+                    redirectUri: _config.HostURL + "/TwitchAuthKey",
                     scopes: request.Scopes,
                     forceVerify: true
                 );

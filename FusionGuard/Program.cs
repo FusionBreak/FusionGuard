@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using TwitchLib.Api;
+using TwitchLib.Api.Core.Enums;
 using TwitchLib.Client;
 using TwitchLib.Communication.Clients;
 using TwitchLib.Communication.Models;
@@ -51,7 +52,24 @@ namespace FusionGuard
 
         private void SetupWebApp(WebApplication app)
         {
+            var mediator = _serviceScope.ServiceProvider.GetRequiredService<IMediator>();
+
             app.UseHttpsRedirection();
+
+            app.MapGet("/Authenticate", async (HttpContext context) =>
+            {
+                var url = await mediator.Send(new GetAuthorizationCodeUrl.Command(new AuthScopes[]
+                {
+                    AuthScopes.Helix_User_Edit_Follows,
+                    AuthScopes.User_Follows_Edit,
+                    AuthScopes.Helix_User_Read_BlockedUsers,
+                    AuthScopes.User_Read,
+                    AuthScopes.Helix_User_Read_Subscriptions,
+                    AuthScopes.Helix_Bits_Read
+                }));
+
+                context.Response.Redirect(url, true);
+            });
 
             app.MapGet("/TwitchAuthKey", async (HttpContext context) =>
             {

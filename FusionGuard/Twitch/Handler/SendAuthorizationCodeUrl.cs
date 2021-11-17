@@ -1,4 +1,5 @@
-﻿using FusionGuard.Resources;
+﻿using FusionGuard.Configuration;
+using FusionGuard.Resources;
 using MediatR;
 using System.Collections.Generic;
 using System.Threading;
@@ -11,21 +12,23 @@ namespace FusionGuard.Twitch.Handler
 {
     public class SendAuthorizationCodeUrl
     {
-        public record Command(string Url) : IRequest;
+        public record Command() : IRequest;
 
         internal class Handler : IRequestHandler<Command>
         {
             TwitchClient _client;
+            Config _config;
 
-            public Handler(TwitchClient client)
+            public Handler(TwitchClient client, Config config)
             {
                 _client = client;
+                _config = config;
             }
 
             public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
             {
                 var whisper = Language.AuthorizationCodeUrlSend
-                                .Replace("{URL}", request.Url);
+                                .Replace("{URL}", _config.HostURL + "/Authenticate");
 
                 _client.SendMessage(_client.TwitchUsername, whisper);
 

@@ -25,7 +25,7 @@ namespace FusionGuard.Twitch.WebHandler
 
             public async Task<string> Handle(Command request, CancellationToken cancellationToken)
             {
-                var response = await _api.Auth.GetAccessTokenFromCodeAsync(request.AuthCode, _config.ClientSecret, _config.HostURL);
+                var response = await _api.Auth.GetAccessTokenFromCodeAsync(request.AuthCode, _config.ClientSecret, _config.HostURL+ "/TwitchAuthKey");
                 return response.AccessToken;
             }
         }

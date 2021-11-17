@@ -98,15 +98,7 @@ namespace FusionGuard.Twitch
                     await _mediator.Send(new Ping.Command(e.Command.ChatMessage.Channel));
                     break;
                 case "join":
-                    var url = await _mediator.Send(new GetAuthorizationCodeUrl.Command(new AuthScopes[]
-                    { 
-                        AuthScopes.Helix_User_Edit_Follows,
-                        AuthScopes.User_Follows_Edit,
-                        AuthScopes.Helix_User_Read_BlockedUsers,
-                        AuthScopes.User_Read,
-                        AuthScopes.Helix_User_Read_Subscriptions
-                    }));
-                    await _mediator.Send(new SendAuthorizationCodeUrl.Command(url));                   
+                    await _mediator.Send(new SendAuthorizationCodeUrl.Command());                   
                     break;
                 case "leave":
                     await _mediator.Send(new Leave.Command(e.Command.ChatMessage.Username));

@@ -56,6 +56,11 @@ namespace FusionGuard
 
             app.UseHttpsRedirection();
 
+            app.MapGet("/", async (HttpContext context) =>
+            {
+                return "online";
+            });
+
             app.MapGet("/Authenticate", async (HttpContext context) =>
             {
                 var url = await mediator.Send(new GetAuthorizationCodeUrl.Command(new AuthScopes[]

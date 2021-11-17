@@ -17,8 +17,8 @@ namespace FusionGuard.Twitch
         public DateTime End { get; private set; }
         public TimeSpan Duration => Beginn.Subtract(End);
 
-        public PanicMode() => Beginn = DateTime.Now;
+        public PanicMode() => Beginn = DateTime.UtcNow;
 
-        public void Stop() => End = DateTime.Now;
+        public void Stop() => End = DateTime.UtcNow;
     }
 }

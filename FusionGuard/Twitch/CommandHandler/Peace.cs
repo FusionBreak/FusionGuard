@@ -39,7 +39,7 @@ namespace FusionGuard.Twitch.CommandHandler
                 PanicMode panic;
                 if(UserIsAuthorized(request) && _panics.TryGetValue(request.ChatMessage.Channel, out panic))
                 {
-                    var user = _database.Users.Include(user => user.Panics).First(user => user.Channel == request.ChatMessage.Channel);
+                    var user = _database.Users.Include(user => user.Panics).First(user => user.Channel.ToLower() == request.ChatMessage.Channel);
 
                     var follower = await _mediator.Send(new GetFollower.Command(user.TwitchUserId));
                     var followerAfterPanicBegin = follower.Where(follow => follow.FollowedAt > panic.Beginn);

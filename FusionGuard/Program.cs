@@ -45,16 +45,18 @@ namespace FusionGuard
             var config = _serviceScope.ServiceProvider.GetRequiredService<Config>();
             api.Settings.ClientId = config.ClientId;
             var app = WebApplication.CreateBuilder().Build();
-            SetupWebApp(app);
+            SetupWebApp(app, config.HostURL);
 
             await Task.WhenAll(app.RunAsync(), bot.RunAsync());
         }
 
-        private void SetupWebApp(WebApplication app)
+        private void SetupWebApp(WebApplication app, string url)
         {
             var mediator = _serviceScope.ServiceProvider.GetRequiredService<IMediator>();
 
             app.UseHttpsRedirection();
+
+            app.Urls.Add(url);
 
             app.MapGet("/", async (HttpContext context) =>
             {
